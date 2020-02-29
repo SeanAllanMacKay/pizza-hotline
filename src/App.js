@@ -5,26 +5,57 @@ import { createBrowserHistory } from "history";
 
 import useScreenSize from './hooks/useScreenSize'
 
-import { Button } from '../src/components/Button';
+import Header from './components/Header';
 
 let history = createBrowserHistory();
 
 export default () => {
   const [screenSize] = useScreenSize();
-  console.log(screenSize)
+
   return (
     <Router history={history}>
-      <Switch>
-        <Route 
-          exact
-          path={"/"}
-          render={() => 
-            <Button
-              content="Test"
+        <Switch>
+          <Header
+            history={history}
+          />
+          <div
+            style={{
+              padding: '30px'
+            }}
+          >
+            <Route
+              exact
+              path={"/"}
+              render={() =>
+                <></>
+              }
             />
-          }
-        />
-      </Switch>
+
+            <Route
+              exact
+              path={"/order-online"}
+              render={() =>
+                <></>
+              }
+            />
+
+            <Route
+              exact
+              path={"/menu/:location"}
+              render={() =>
+                <></>
+              }
+            />
+
+            <Route
+              exact
+              path={"/gift-cards"}
+              render={() =>
+                <></>
+              }
+            />
+          </div>
+        </Switch>
     </Router>
   );
 };

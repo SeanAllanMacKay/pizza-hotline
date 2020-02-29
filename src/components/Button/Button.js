@@ -2,8 +2,7 @@ import React from 'react';
 
 import { Button, Tooltip } from 'antd'
 
-export default (props) => {
-    const { content, disabled, type, tooltip } = props;
+export default ({ content, disabled, type, tooltip }) => {
     return (
         <Tooltip
             title={tooltip}
