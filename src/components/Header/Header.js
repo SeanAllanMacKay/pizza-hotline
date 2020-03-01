@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { matchPath } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
 import { Menu } from 'antd'
 import { UserOutlined } from '@ant-design/icons';
@@ -9,7 +10,8 @@ import Button from '../Button'
 
 const { SubMenu, Item } = Menu
 
-export default ({ history }) => {
+export default () => {
+    const history = useHistory()
     const page = useMemo(() => {
         const match = matchPath(history.location.pathname, {
                 path: `/:page`,
@@ -70,6 +72,12 @@ export default ({ history }) => {
                             margin: 0,
                             color: 'white',
                             padding: '15px 0',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                            if(history.location.pathname !== '/'){
+                                history.push('/')
+                            }
                         }}
                     >
                         Pizza Hotline
@@ -200,6 +208,26 @@ export default ({ history }) => {
                                     }}
                                 >
                                     GIFT CARDS
+                                </p>
+                            </Item>
+
+                            <Item
+                                key="contact"
+                                style={{
+                                    height: '74px'
+                                }}
+                                onClick={() => {
+                                    if(history.location.pathname !== '/contact'){
+                                        history.push('/contact')
+                                    }
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        margin: '14px 0 0 0'
+                                    }}
+                                >
+                                    CONTACT
                                 </p>
                             </Item>
                         </Menu>
