@@ -11,51 +11,59 @@ let history = createBrowserHistory();
 
 export default () => {
   const [screenSize] = useScreenSize();
-
   return (
-    <Router history={history}>
-        <Switch>
-          <Header
-            history={history}
-          />
-          <div
-            style={{
-              padding: '30px'
-            }}
-          >
-            <Route
-              exact
-              path={"/"}
-              render={() =>
-                <></>
-              }
-            />
+    <>
+      <Router history={history}>
+        <Header />
+        <div
+          style={{
+            padding: '30px',
+            height: 'calc(100vh)'
+          }}
+        >
+          <Switch>
+              <Route
+                exact
+                path={"/"}
+                render={() =>
+                  <h2>Coming Soon!</h2>
+                }
+              />
 
-            <Route
-              exact
-              path={"/order-online"}
-              render={() =>
-                <></>
-              }
-            />
+              <Route
+                exact
+                path={"/order-online"}
+                render={() =>
+                  <></>
+                }
+              />
 
-            <Route
-              exact
-              path={"/menu/:location"}
-              render={() =>
-                <></>
-              }
-            />
+              <Route
+                exact
+                path={"/menu/:location"}
+                render={() =>
+                  <h2>Coming Soon!</h2>
+                }
+              />
 
-            <Route
-              exact
-              path={"/gift-cards"}
-              render={() =>
-                <></>
-              }
-            />
-          </div>
-        </Switch>
-    </Router>
+              <Route
+                exact
+                path={"/gift-cards"}
+                render={() =>
+                  <h2>Coming Soon!</h2>
+                }
+              />
+
+              <Route
+                exact
+                path={"/contact"}
+                render={() =>
+                  <h2>Coming Soon!</h2>
+                }
+              />
+          </Switch>
+        </div>
+      </Router>
+    </>
   );
 };
