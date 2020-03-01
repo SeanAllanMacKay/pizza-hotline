@@ -6,6 +6,7 @@ import { createBrowserHistory } from "history";
 import useScreenSize from './hooks/useScreenSize'
 
 import Header from './components/Header';
+import OrderPage from './pages/OrderPage'
 
 let history = createBrowserHistory();
 
@@ -34,7 +35,7 @@ export default () => {
                 exact
                 path={"/order-online"}
                 render={() =>
-                  <></>
+                  <OrderPage />
                 }
               />
 
