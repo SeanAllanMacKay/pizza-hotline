@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 
 import { Form, Field as FormField } from 'react-final-form'
 
+import { setToken } from '../../../hooks/useCookies'
+import createAccount from '../../../actions/account/create-account'
+
 import notification from '../../../hooks/useNotification'
 
 import { Input, InputNumber, Checkbox } from 'antd'
@@ -14,28 +17,22 @@ const onSubmit = async (values) => {
         ...rest
     } = values
 
-    const response = await fetch('/sign-up', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(rest)
-    })
+    const response = await createAccount(rest)
 
-    const json = await response.json()
-
-    if(response.status === 200){
+    if(!response.error){
         notification({
             title: 'Account Created',
             type: 'success',
             message: 'Your account has been created!'
         })
+
+        setToken(response.token)
+        window.location.reload()
     } else {
         notification({
             title: 'Error',
             type: 'error',
-            message: `${json.error}`
+            message: `${response.error}`
         })
     }
 }

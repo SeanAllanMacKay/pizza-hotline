@@ -1,17 +1,46 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useContext } from 'react';
 import { matchPath } from 'react-router'
 import { useHistory } from 'react-router-dom'
+import login from '../../actions/account/login'
 
-import { Menu } from 'antd'
+import AccountContext from '../../context/AccountContext'
+
+import { Form, Field as FormField } from 'react-final-form'
+import { Menu, Popover, Input } from 'antd'
 import { UserOutlined } from '@ant-design/icons';
+import notification from '../../hooks/useNotification'
+import { setToken, removeToken } from '../../hooks/useCookies'
 
 import Logo from '../Logo'
 import Button from '../Button'
+import Field from '../Field'
 
 const { SubMenu, Item } = Menu
 
+const required = (value) => value ? undefined : 'Required'
+
+const onSubmit = async (values) => {
+    const response = await login(values)
+
+    if(!response.error){
+        setToken(response.token)
+        window.location.reload()
+    } else {
+        notification({
+            title: 'Error',
+            type: 'error',
+            message: `${response.error}`
+        })
+    }
+}
+
 export default () => {
+    const { account } = useContext(AccountContext)
+
+    const [passwordVisible, setPasswordVisible] = useState(false)
+
     const history = useHistory()
+
     const page = useMemo(() => {
         const match = matchPath(history.location.pathname, {
                 path: `/:page`,
@@ -233,10 +262,129 @@ export default () => {
                         </Menu>
                     </div>
 
-                    <Button
-                        content={<><UserOutlined /> SIGN IN</>}
-                        type="link"
-                    />
+                    {
+                        account ?
+                            <Popover
+                                trigger="click"
+                                placement="bottomRight"
+                                title={`${account.first_name} ${account.last_name}`}
+                                content={
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column'
+                                        }}
+                                    >
+                                        <Button
+                                            content="Log Out"
+                                            type="primary"
+                                            onClick={() => {
+                                                removeToken()
+                                                window.location.reload()
+                                            }}
+                                        />
+                                    </div>
+                                }
+                            >
+                                <Button
+                                    content={<UserOutlined style={{ fontSize: '20px' }} />}
+                                    type="link"
+                                />
+                            </Popover>
+                            :
+                            <Popover
+                                content={
+                                    <Form
+                                        onSubmit={onSubmit}
+                                        render={({ handleSubmit }) => (
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    padding: '15px',
+                                                    width: '300px'
+                                                }}
+                                            >
+                                                <FormField
+                                                    name="email"
+                                                    validate={required}
+                                                    render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
+                                                        <>
+                                                            <Field
+                                                                title="Email"
+                                                                error={touched && error}
+                                                            >
+                                                                <Input
+                                                                    value={value}
+                                                                    onChange={onChange}
+                                                                    onBlur={onBlur}
+                                                                />
+                                                            </Field>
+                                                        </>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    name="password"
+                                                    validate={required}
+                                                    render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
+                                                        <>
+                                                            <Field
+                                                                title="Password"
+                                                                error={touched && error}
+                                                                actions={
+                                                                    <Button
+                                                                        content={passwordVisible ? "Hide" : "Show"}
+                                                                        type='link'
+                                                                        onClick={() => value && setPasswordVisible(!passwordVisible)}
+                                                                        style={{
+                                                                            color: 'black'
+                                                                        }}
+                                                                    />
+                                                                }
+                                                            >
+                                                                <Input
+                                                                    value={value}
+                                                                    onChange={onChange}
+                                                                    onBlur={onBlur}
+                                                                    type={passwordVisible ? "" : "password"}
+                                                                />
+                                                            </Field>
+                                                        </>
+                                                    )}
+                                                />
+
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        justifyContent: 'flex-end',
+                                                        margin: '10px 0 0 0'
+                                                    }}
+                                                >
+                                                    <Button
+                                                        content="Log In"
+                                                        type="primary"
+                                                        onClick={() => handleSubmit()}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                }
+                                title="Log in"
+                                trigger="click"
+                                placement="bottomRight"
+                            >
+                                <Button
+                                    content="LOG IN"
+                                    type="link"
+                                />
+                            </Popover>
+                    }
+
+
+
                 </div>
 
             </div>
