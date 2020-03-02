@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import { Form, Field as FormField } from 'react-final-form'
 
@@ -11,35 +11,9 @@ import { Input, InputNumber, Checkbox } from 'antd'
 import Field from '../../../components/Field'
 import Button from '../../../components/Button'
 
-const onSubmit = async (values) => {
-    const {
-        password_confirm,
-        ...rest
-    } = values
-
-    const response = await createAccount(rest)
-
-    if(!response.error){
-        notification({
-            title: 'Account Created',
-            type: 'success',
-            message: 'Your account has been created!'
-        })
-
-        setToken(response.token)
-        window.location.reload()
-    } else {
-        notification({
-            title: 'Error',
-            type: 'error',
-            message: `${response.error}`
-        })
-    }
-}
-
 const required = (value) => value ? undefined : 'Required'
 
-const emailValidation = (value, allValues, { touched, error }) => {
+const emailValidation = (value) => {
     if(value){
         return /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value) ? undefined : 'Must be a valid email address'
     } else {
@@ -47,7 +21,7 @@ const emailValidation = (value, allValues, { touched, error }) => {
     }
 }
 
-const phoneValidation = (value, allValues, { touched, error }) => {
+const phoneValidation = (value) => {
     if(!value){
         return 'Required'
     } else if (!/^\d+$/.test(value)){
@@ -57,7 +31,7 @@ const phoneValidation = (value, allValues, { touched, error }) => {
     }
 }
 
-const passwordValidation = (value, allValues, { touched }) => {
+const passwordValidation = (value) => {
     const errors = {
         length: false,
         lowercase: false,
@@ -88,7 +62,7 @@ const passwordValidation = (value, allValues, { touched }) => {
     }
 }
 
-const confirmPasswordValidation = (value, allValues, { touched }) => {
+const confirmPasswordValidation = (value, allValues) => {
     if(value !== allValues.password){
         return 'Passwords must match'
     } else if (!value){
@@ -96,9 +70,45 @@ const confirmPasswordValidation = (value, allValues, { touched }) => {
     }
 }
 
-export default () => {
+export default ({ stepForward, contactInfo, setContactInfo, account }) => {
     const [passwordVisible, setPasswordVisible] = useState(false)
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
+
+    const onSubmit = async (values) => {
+        const {
+            password_confirm,
+            ...rest
+        } = values
+
+        if(account){
+            setContactInfo(rest)
+
+            stepForward()
+        } else {
+            const response = await createAccount(rest)
+
+            if(!response.error){
+                notification({
+                    title: 'Account Created',
+                    type: 'success',
+                    message: 'Your account has been created!'
+                })
+
+                setToken(response.token)
+
+                setContactInfo(rest)
+
+                stepForward()
+            } else {
+                notification({
+                    title: 'Error',
+                    type: 'error',
+                    message: `${response.error}`
+                })
+            }
+        }
+    }
+
     return (
         <div
             style={{
@@ -122,7 +132,7 @@ export default () => {
                         margin: '0 15px 0 0'
                     }}
                 >
-                    SIGN UP
+                    {account ? 'CONTACT INFO' : 'SIGN UP'}
                 </h2>
                 <div
                     style={{
@@ -141,7 +151,8 @@ export default () => {
 
             <Form
                 onSubmit={onSubmit}
-                render={({ handleSubmit }) => (
+                initialValues={contactInfo ? contactInfo : account}
+                render={({ handleSubmit, values }) => (
                     <div
                         style={{
                             display: 'flex',
@@ -294,80 +305,84 @@ export default () => {
                             }}
                         />
 
-                        <FormField
-                            name="password"
-                            validate={passwordValidation}
-                            render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
-                                <>
-                                    <Field
-                                        title="Password"
-                                        error={touched && error}
-                                        actions={
-                                            <Button
-                                                content={passwordVisible ? "Hide" : "Show"}
-                                                type='link'
-                                                onClick={() => value && setPasswordVisible(!passwordVisible)}
-                                                style={{
-                                                    color: 'black'
-                                                }}
-                                            />
-                                        }
-                                    >
-                                        <Input
-                                            value={value}
-                                            onChange={onChange}
-                                            onBlur={onBlur}
-                                            type={passwordVisible ? "" : "password"}
-                                        />
-                                    </Field>
-                                </>
-                            )}
-                        />
+                        {!account &&
+                            <>
+                                <FormField
+                                    name="password"
+                                    validate={passwordValidation}
+                                    render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
+                                        <>
+                                            <Field
+                                                title="Password"
+                                                error={touched && error}
+                                                actions={
+                                                    <Button
+                                                        content={passwordVisible ? "Hide" : "Show"}
+                                                        type='link'
+                                                        onClick={() => value && setPasswordVisible(!passwordVisible)}
+                                                        style={{
+                                                            color: 'black'
+                                                        }}
+                                                    />
+                                                }
+                                            >
+                                                <Input
+                                                    value={value}
+                                                    onChange={onChange}
+                                                    onBlur={onBlur}
+                                                    type={passwordVisible ? "" : "password"}
+                                                />
+                                            </Field>
+                                        </>
+                                    )}
+                                />
 
-                        <FormField
-                            name="password_confirm"
-                            validate={confirmPasswordValidation}
-                            render={({ input: { value, onChange, onBlur }, meta: { error, touched } }) => (
-                                <>
-                                    <Field
-                                        title="Confirm Password"
-                                        error={touched && error}
-                                        actions={
-                                            <Button
-                                                content={confirmPasswordVisible ? "Hide" : "Show"}
-                                                type='link'
-                                                onClick={() => value && setConfirmPasswordVisible(!confirmPasswordVisible)}
-                                                style={{
-                                                    color: 'black'
-                                                }}
-                                            />
-                                        }
-                                    >
-                                        <Input
-                                            value={value}
-                                            onChange={onChange}
-                                            onBlur={onBlur}
-                                            type={confirmPasswordVisible ? "" : "password"}
-                                        />
-                                    </Field>
-                                </>
-                            )}
-                        />
+                                <FormField
+                                    name="password_confirm"
+                                    validate={confirmPasswordValidation}
+                                    render={({ input: { value, onChange, onBlur }, meta: { error, touched } }) => (
+                                        <>
+                                            <Field
+                                                title="Confirm Password"
+                                                error={touched && error}
+                                                actions={
+                                                    <Button
+                                                        content={confirmPasswordVisible ? "Hide" : "Show"}
+                                                        type='link'
+                                                        onClick={() => value && setConfirmPasswordVisible(!confirmPasswordVisible)}
+                                                        style={{
+                                                            color: 'black'
+                                                        }}
+                                                    />
+                                                }
+                                            >
+                                                <Input
+                                                    value={value}
+                                                    onChange={onChange}
+                                                    onBlur={onBlur}
+                                                    type={confirmPasswordVisible ? "" : "password"}
+                                                />
+                                            </Field>
+                                        </>
+                                    )}
+                                />
 
-                        <FormField
-                            name="recieve_promos"
-                            type="checkbox"
-                            render={({ input: { value, onChange }, meta: { error } }) => (
-                                <>
-                                    <Checkbox
-                                        onClick={onChange}
-                                        checked={value}
-                                    >
-                                        Recieve promos by email
-                                    </Checkbox>
-                                </>
-                            )}
-                        />
+                                <FormField
+                                    name="recieve_promos"
+                                    type="checkbox"
+                                    render={({ input: { value, onChange }, meta: { error } }) => (
+                                        <>
+                                            <Checkbox
+                                                onClick={onChange}
+                                                checked={value}
+                                            >
+                                                Recieve promos by email
+                                            </Checkbox>
+                                        </>
+                                    )}
+                                />
+                            </>
+                        }
 
                         <div
                             style={{
@@ -377,17 +392,31 @@ export default () => {
                                 margin: '10px 0 0 0'
                             }}
                         >
-                            <Button
-                                content="Continue as guest"
-                                type="link"
-                                onClick={() => console.log('continue as gueast')}
-                            />
+                            {!account &&
+                                <Button
+                                    content="Continue as guest"
+                                    type="link"
+                                    onClick={() => console.log('continue as gueast')}
+                                />
+                            }
 
-                            <Button
-                                content="Sign Up"
-                                type="primary"
-                                onClick={() => handleSubmit()}
-                            />
+                            {!account ?
+                                <>
+                                    <Button
+                                        content="Sign Up"
+                                        type="primary"
+                                        onClick={() => handleSubmit()}
+                                    />
+                                </>
+                                :
+                                <>
+                                    <Button
+                                        content="Next"
+                                        type="primary"
+                                        onClick={() => handleSubmit('test')}
+                                    />
+                                </>
+                            }
                         </div>
                     </div>
                 )}
