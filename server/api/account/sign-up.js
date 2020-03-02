@@ -12,7 +12,7 @@ const {
 } = process.env
 
 router.post('/', async (req, res) => {
-    const response = await fetch(`${BACKEND}/users`, {
+    const response = await fetch(`${BACKEND}/user`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
