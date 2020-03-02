@@ -40,5 +40,13 @@ require('dotenv').config();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
    // Sign up
-   const signUp = require('./api/auth/sign-up')
+   const signUp = require('./api/account/sign-up')
    app.use('/sign-up', signUp);
+
+   // Log in
+   const login = require('./api/account/login')
+   app.use('/login', login);
+
+   // Get account
+   const getAccount = require('./api/account/get-account')
+   app.use('/get-account', getAccount);
