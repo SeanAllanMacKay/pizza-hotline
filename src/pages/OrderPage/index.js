@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import AccountContext from '../../context/AccountContext'
 
-import SignUp from './SignUp'
+import ContactPage from './ContactPage'
 import LocationPage from './LocationPage'
 import OrderPage from './OrderPage'
 import PaymentPage from './PaymentPage'
@@ -35,7 +35,7 @@ export default () => {
                 }}
             >
                 { stepCount === 0 &&
-                    <SignUp
+                    <ContactPage
                         stepForward={() => setStepCount(1)}
                         contactInfo={contactInfo}
                         setContactInfo={setContactInfo}
