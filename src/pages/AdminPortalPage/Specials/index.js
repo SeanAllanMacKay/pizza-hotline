@@ -9,6 +9,16 @@ import {  } from 'antd';
 const { TabPane } = Tabs;
 
 export default () => {
+    const history = useHistory()
+
+    const selected = useMemo(() => {
+        const match = matchPath(history.location.pathname, {
+                path: `/admin-portal/specials/:selected`,
+                exact: true,
+                strict: false
+            })
+        return match && match.params && match.params.selected
+    }, [history.location.pathname])
     return (
         <div
             style={{
@@ -17,11 +27,12 @@ export default () => {
             }}
         >
             <Tabs
-                defaultActiveKey="bundles"
+                defaultActiveKey={selected}
+                onTabClick={(key) => history.push(`/admin-portal/specials/${key}`)}
             >
                 <TabPane
-                    tab='Bundles'
-                    key="bundles"
+                    tab='Combos'
+                    key="combos"
                 />
 
                 <TabPane
