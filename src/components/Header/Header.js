@@ -275,6 +275,27 @@ export default () => {
                                             flexDirection: 'column'
                                         }}
                                     >
+                                        <div
+                                            style={{
+                                                margin: '0 0 10px 0',
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            {account && account.admin &&
+                                                <Button
+                                                    content="Admin Portal"
+                                                    type="link"
+                                                    onClick={() => {
+                                                        if(history.location.pathname !== '/admin-portal'){
+                                                            history.push('/admin-portal')
+                                                        }
+                                                    }}
+                                                />
+                                            }
+
+                                        </div>
                                         <Button
                                             content="Log Out"
                                             type="primary"

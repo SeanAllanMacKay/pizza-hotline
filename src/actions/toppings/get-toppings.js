@@ -5,8 +5,8 @@ export default async () => {
         REACT_APP_BACKEND
     } = process.env;
 
-    const response = await fetch(`${REACT_APP_BACKEND}/user`, {
-        method: 'GET',
+    const response = await fetch(`${REACT_APP_BACKEND}/toppings`, {
+        method: 'Get',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
