@@ -23,7 +23,7 @@ export default () => {
     const selected = useMemo(() => {
         const match = matchPath(history.location.pathname, {
                 path: `/admin-portal/:selected`,
-                exact: true,
+                exact: false,
                 strict: false
             })
         return match && match.params && match.params.selected
@@ -51,21 +51,21 @@ export default () => {
             >
                 <Item
                     key="pizzas"
-                    onClick={() => history.push('/admin-portal/pizzas')}
+                    onClick={() => history.push('/admin-portal/pizzas/toppings')}
                 >
                     <span>Pizzas</span>
                 </Item>
 
                 <Item
                     key="add-ons"
-                    onClick={() => history.push('/admin-portal/add-ons')}
+                    onClick={() => history.push('/admin-portal/add-ons/sides')}
                 >
                     <span>Add-ons</span>
                 </Item>
 
                 <Item
                     key="specials"
-                    onClick={() => history.push('/admin-portal/specials')}
+                    onClick={() => history.push('/admin-portal/specials/combos')}
                 >
                     <span>Specials</span>
                 </Item>
