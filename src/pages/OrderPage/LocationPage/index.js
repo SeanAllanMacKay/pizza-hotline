@@ -132,7 +132,10 @@ export default ({ stepBack, stepForward, locationInfo, setLocationInfo }) => {
                             >
                                 <Button
                                     content="Back"
-                                    onClick={() => stepBack()}
+                                    onClick={() => {
+                                        setLocationInfo({ type, ...values })
+                                        stepBack()
+                                    }}
                                 />
 
                                 <Button

@@ -10,6 +10,7 @@ import useScreenSize from './hooks/useScreenSize'
 
 import Header from './components/Header';
 import OrderPage from './pages/OrderPage'
+import AdminPortalPage from './pages/AdminPortalPage'
 
 let history = createBrowserHistory();
 
@@ -87,6 +88,34 @@ export default () => {
                     <h2>Coming Soon!</h2>
                   }
                 />
+
+                {account && account.admin &&
+                  <>
+                    <Route
+                      exact
+                      path={"/admin-portal"}
+                      render={() =>
+                        <AdminPortalPage />
+                      }
+                    />
+
+                    <Route
+                      exact
+                      path={"/admin-portal/:page"}
+                      render={() =>
+                        <AdminPortalPage />
+                      }
+                    />
+
+                    <Route
+                      exact
+                      path={"/admin-portal/:page/:tab"}
+                      render={() =>
+                        <AdminPortalPage />
+                      }
+                    />
+                  </>
+                }
             </Switch>
           </div>
         </Router>

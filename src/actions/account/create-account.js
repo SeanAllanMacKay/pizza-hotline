@@ -1,5 +1,9 @@
 export default async (values) => {
-    const response = await fetch('/sign-up', {
+    const {
+        REACT_APP_BACKEND
+    } = process.env;
+
+    const response = await fetch(`${REACT_APP_BACKEND}/user`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
