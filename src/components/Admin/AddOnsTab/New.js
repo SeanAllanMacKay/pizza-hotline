@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
 
-import notification from '../../../../hooks/useNotification'
-
-import upsertSauce from '../../../../actions/sauces/upsert-sauce'
+import notification from '../../../hooks/useNotification'
 
 import { Form, Field as FormField } from 'react-final-form'
-import { Input, Select, Modal } from 'antd';
+import { Input, Select, Modal, InputNumber } from 'antd';
 
-import Field from '../../../../components/Field'
-import Button from '../../../../components/Button'
+import Field from '../../Field'
+import Button from '../../Button'
 
 const { Option, OptGroup } = Select
 
 const required = (value) => value ? undefined : 'Required'
 
-export default ({ setData }) => {
+export default ({ type, upsert }) => {
     const [open, setOpen] = useState(false)
 
     const onSubmit = async (values) => {
-        const response = await upsertSauce(values)
+        const response = await upsert(values)
 
         if(response.success){
             window.location.reload(false)
@@ -27,14 +25,14 @@ export default ({ setData }) => {
             notification({
                 title: 'Error',
                 type: 'error',
-                message: 'There was an error adding this sauce'
+                message: 'There was an error adding this side'
             })
         }
     }
     return (
         <>
             <Button
-                content="New Sauce"
+                content={`New ${type}`}
                 type="primary"
                 onClick={() => setOpen(true)}
             />
@@ -42,13 +40,14 @@ export default ({ setData }) => {
                 onSubmit={onSubmit}
                 render={({ handleSubmit, values }) => (
                     <Modal
-                        title="New Sauce"
+                        title={`New ${type}`}
                         visible={open}
-                        okText="Add Sauce"
+                        okText={`Add ${type}`}
                         onOk={handleSubmit}
                         onCancel={() => setOpen(false)}
                         destroyOnClose
                     >
+
                         <div
                             style={{
                                 width: '100%',
@@ -75,9 +74,78 @@ export default ({ setData }) => {
                                 )}
                             />
 
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row'
+                                }}
+                            >
+                                <FormField
+                                    name="code"
+                                    validate={required}
+                                    render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
+                                        <>
+                                            <div
+                                                style={{
+                                                    flex: 1
+                                                }}
+                                            >
+                                                <Field
+                                                    title="Code"
+                                                    error={touched && error}
+
+                                                >
+                                                    <Input
+                                                        value={value}
+                                                        onChange={onChange}
+                                                        onBlur={onBlur}
+
+                                                    />
+                                                </Field>
+                                            </div>
+
+                                        </>
+                                    )}
+                                />
+
+                                <FormField
+                                    name="price"
+                                    validate={required}
+                                    initialValue={0}
+                                    render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
+                                        <>
+                                            <div
+                                                style={{
+                                                    flex: 1,
+                                                    margin: '0 0 0 20px'
+                                                }}
+                                            >
+                                                <Field
+                                                    title="Price"
+                                                    error={touched && error}
+                                                >
+                                                    <InputNumber
+                                                        value={value}
+                                                        onChange={onChange}
+                                                        onBlur={onBlur}
+                                                        min={0}
+                                                        formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                        parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                                                        step={0.25}
+                                                        style={{
+                                                            width: '100%'
+                                                        }}
+                                                    />
+                                                </Field>
+                                            </div>
+
+                                        </>
+                                    )}
+                                />
+                            </div>
+
                             <FormField
                                 name="tags"
-                                validate={required}
                                 render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
                                     <>
                                         <Field

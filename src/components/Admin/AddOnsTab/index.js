@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import getToppings from '../../../../actions/toppings/get-toppings'
-import notification from '../../../../hooks/useNotification'
+import notification from '../../../hooks/useNotification'
 
 import { Table, Tag } from 'antd';
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 
-import NewTopping from './NewTopping'
-import Button from '../../../../components/Button'
+import New from './New'
+import Button from '../../Button'
 
 const colors = {
     Vegetable: 'green',
@@ -20,7 +19,7 @@ const colors = {
     "Whole Wheat": 'orange'
 }
 
-export default () => {
+export default ({ getData, type, upsert }) => {
     const [data, setData] = useState([])
     const [filters, setFilters] = useState(null)
 
@@ -29,13 +28,25 @@ export default () => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            width: 250,
+            width: 200,
+        },
+        {
+            title: 'Code',
+            dataIndex: 'code',
+            key: 'code',
+            width: 125
+        },
+        {
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+            width: 100
         },
         {
             title: 'Tags',
             dataIndex: 'tags',
             key: 'tags',
-            width: 150,
+            width: 200,
             filters: [
                 {
                     text: 'Types',
@@ -114,19 +125,19 @@ export default () => {
 
     useEffect(() => {
         (async () => {
-            const response = await getToppings()
+            const response = await getData()
 
             if(response.success){
-                setData(response.toppings)
+                setData(response.sides)
             } else {
                 notification({
                     title: 'Error',
                     type: 'error',
-                    message: 'There was an error fetching the toppings'
+                    message: `There was an error fetching the ${type}`
                 })
             }
         })()
-    }, [])
+    }, [getData, type])
 
     return (
         <>
@@ -139,10 +150,12 @@ export default () => {
                     padding: '0 30px 0 0'
                 }}
             >
-                <NewTopping
-                    setData={setData}
+                <New
+                type={`${type.charAt(0).toUpperCase()}${type.substring(1, type.length - 1)}`}
+                    upsert={upsert}
                 />
             </div>
+
             <Table
                 columns={columns}
                 dataSource={

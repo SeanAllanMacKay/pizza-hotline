@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
 
-import notification from '../../../../hooks/useNotification'
-
-import upsertTopping from '../../../../actions/toppings/upsert-topping'
+import notification from '../../../hooks/useNotification'
 
 import { Form, Field as FormField } from 'react-final-form'
 import { Input, Select, Modal } from 'antd';
 
-import Field from '../../../../components/Field'
-import Button from '../../../../components/Button'
+import Field from '../../Field'
+import Button from '../../Button'
 
 const { Option, OptGroup } = Select
 
 const required = (value) => value ? undefined : 'Required'
 
-export default ({ setData }) => {
+export default ({ type, upsert, tags, pizzaSizes }) => {
     const [open, setOpen] = useState(false)
 
     const onSubmit = async (values) => {
-        const response = await upsertTopping(values)
+        const response = await upsert(values)
 
         if(response.success){
             window.location.reload(false)
@@ -27,14 +25,14 @@ export default ({ setData }) => {
             notification({
                 title: 'Error',
                 type: 'error',
-                message: 'There was an error adding this toppings'
+                message: `There was an error adding this ${type}`
             })
         }
     }
     return (
         <>
             <Button
-                content="New Topping"
+                content={`New ${type}`}
                 type="primary"
                 onClick={() => setOpen(true)}
             />
@@ -42,9 +40,9 @@ export default ({ setData }) => {
                 onSubmit={onSubmit}
                 render={({ handleSubmit, values }) => (
                     <Modal
-                        title="New Topping"
+                        title={`New ${type}`}
                         visible={open}
-                        okText="Add Topping"
+                        okText={`Add ${type}`}
                         onOk={handleSubmit}
                         onCancel={() => setOpen(false)}
                         destroyOnClose
@@ -76,9 +74,38 @@ export default ({ setData }) => {
                                 )}
                             />
 
+                            {pizzaSizes.length ?
+                                <FormField
+                                    name="sizes"
+                                    validate={required}
+                                    render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
+                                        <>
+                                            <Field
+                                                title="Sizes"
+                                                error={touched && error}
+                                            >
+                                                <Select
+                                                    value={value ? value.filter(tag => tag !== '') : []}
+                                                    onChange={onChange}
+                                                    onBlur={onBlur}
+                                                    mode="multiple"
+                                                    tokenSeparators={[',']}
+                                                >
+                                                    {pizzaSizes && pizzaSizes.map(({ id, name }) => (
+                                                        <Option value={id}>{name}</Option>
+                                                    ))}
+                                                </Select>
+                                            </Field>
+                                        </>
+                                    )}
+                                />
+                                :
+                                null
+                            }
+
+
                             <FormField
                                 name="tags"
-                                validate={required}
                                 render={({ input: { value, onChange, onBlur  }, meta: { error, touched } }) => (
                                     <>
                                         <Field
@@ -92,18 +119,9 @@ export default ({ setData }) => {
                                                 mode="multiple"
                                                 tokenSeparators={[',']}
                                             >
-                                                <OptGroup label="Type">
-                                                    <Option value="Meat">Meat</Option>
-                                                    <Option value="Vegetable">Vegetable</Option>
-                                                    <Option value="Cheese">Cheese</Option>
-                                                    <Option value="Seafood">Seafood</Option>
-                                                </OptGroup>
-
-                                                <OptGroup label="Characteristics">
-                                                    <Option value="Gluten Free">Gluten Free</Option>
-                                                    <Option value="Vegetarian">Vegetarian</Option>
-                                                    <Option value="Vegan">Vegan</Option>
-                                                </OptGroup>
+                                                {tags && tags.map(({ id, name }) => (
+                                                    <Option value={id}>{name}</Option>
+                                                ))}
                                             </Select>
                                         </Field>
                                     </>

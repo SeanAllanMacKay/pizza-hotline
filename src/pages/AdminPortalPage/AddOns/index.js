@@ -2,9 +2,14 @@ import React, { useMemo } from 'react';
 import { matchPath } from 'react-router'
 import { useHistory } from 'react-router-dom'
 
+// Sides
+import getSides from '../../../actions/sides/get-sides'
+import upsertSide from '../../../actions/sides/upsert-side'
+
 import { Tabs } from 'antd';
 
-import {  } from 'antd';
+import AddOnsTab from '../../../components/Admin/AddOnsTab'
+import DrinksTab from './DrinksPage'
 
 const { TabPane } = Tabs;
 
@@ -14,11 +19,12 @@ export default () => {
     const selected = useMemo(() => {
         const match = matchPath(history.location.pathname, {
                 path: `/admin-portal/add-ons/:selected`,
-                exact: true,
+                exact: false,
                 strict: false
             })
         return match && match.params && match.params.selected
     }, [history.location.pathname])
+
     return (
         <div
             style={{
@@ -33,12 +39,20 @@ export default () => {
                 <TabPane
                     tab='Sides'
                     key="sides"
-                />
+                >
+                    <AddOnsTab
+                        getData={getSides}
+                        upsert={upsertSide}
+                        type="sides"
+                    />
+                </TabPane>
 
                 <TabPane
                     tab='Drinks'
                     key="drinks"
-                />
+                >
+                    <DrinksTab />
+                </TabPane>
 
                 <TabPane
                     tab='Wings'

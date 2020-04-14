@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Button, Tooltip } from 'antd'
 
-export default ({ content, disabled, type, tooltip, onClick, style }) => {
+export default ({ content, disabled, type, tooltip, onClick, style, shape }) => {
     return (
         <Tooltip
             title={tooltip}
@@ -10,6 +10,7 @@ export default ({ content, disabled, type, tooltip, onClick, style }) => {
             <Button
                 disabled={disabled || ! onClick}
                 type={type}
+                shape={shape}
                 onClick={onClick}
                 style={{
                     ...style

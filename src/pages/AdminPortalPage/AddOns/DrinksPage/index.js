@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
-import getSauces from '../../../../actions/sauces/get-sauces'
+import getData from '../../../../actions/drinks/get-drinks'
+import upsert from '../../../../actions/drinks/upsert-drink'
 import notification from '../../../../hooks/useNotification'
 
 import { Table, Tag } from 'antd';
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 
-import NewSauce from './NewSauce'
+import NewDrink from './NewDrink'
 import Button from '../../../../components/Button'
 
 const colors = {
-    Vegetable: 'green',
+    Diet: 'green',
     Vegan: 'lime',
     Vegetarian: 'green',
-    "Gluten Free": 'blue',
-    Meat: 'volcano',
-    Cheese: 'gold',
-    Seafood: 'blue',
+    "Caffeine Free": 'blue',
+    "2L": 'volcano',
+    "529mL": 'gold',
+    Can: 'orange',
     "Whole Wheat": 'orange'
 }
 
@@ -29,53 +30,56 @@ export default () => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            width: 250,
+            width: 200,
+        },
+        {
+            title: 'Sizes',
+            dataIndex: 'sizes',
+            key: 'sizes',
+            width: 200,
+            filters: [
+                {
+                    text: '2L',
+                    value: '2L',
+                },
+                {
+                    text: '591mL',
+                    value: '591mL',
+                },
+                {
+                    text: 'Can',
+                    value: 'Can',
+                },
+                {
+                    text: '547mL',
+                    value: '547mL',
+                },
+            ],
+            render: (sizes) => (
+                <>
+                    {sizes.map(size => (
+                        <Tag color={`${colors[size.name]}`}>{size.name}</Tag>
+                    ))}
+                </>
+            )
         },
         {
             title: 'Tags',
             dataIndex: 'tags',
             key: 'tags',
-            width: 150,
+            width: 200,
             filters: [
                 {
-                    text: 'Types',
-                    value: 'Types',
-                    children: [
-                        {
-                            text: 'Meat',
-                            value: 'Meat',
-                        },
-                        {
-                            text: 'Vegetable',
-                            value: 'Vegetable',
-                        },
-                        {
-                            text: 'Cheese',
-                            value: 'Cheese',
-                        },
-                        {
-                            text: 'Seafood',
-                            value: 'Seafood',
-                        },
-                    ],
+                    text: 'Diet',
+                    value: 'Diet',
                 },
                 {
-                    text: 'Characteristics',
-                    value: 'Characteristics',
-                    children: [
-                        {
-                            text: 'Gluten Free',
-                            value: 'Gluten Free',
-                        },
-                        {
-                            text: 'Vegetarian',
-                            value: 'Vegetarian',
-                        },
-                        {
-                            text: 'Vegan',
-                            value: 'Vegan',
-                        },
-                    ],
+                    text: 'Caffeine Free',
+                    value: 'Caffeine Free',
+                },
+                {
+                    text: 'Zero Sugar',
+                    value: 'Zero Sugar',
                 },
             ],
             render: (tags) => (
@@ -114,15 +118,15 @@ export default () => {
 
     useEffect(() => {
         (async () => {
-            const response = await getSauces()
+            const response = await getData()
 
             if(response.success){
-                setData(response.sauces)
+                setData(response.drinks)
             } else {
                 notification({
                     title: 'Error',
                     type: 'error',
-                    message: 'There was an error fetching the sauces'
+                    message: `There was an error fetching the drinks`
                 })
             }
         })()
@@ -139,10 +143,12 @@ export default () => {
                     padding: '0 30px 0 0'
                 }}
             >
-                <NewSauce
-                    setData={setData}
+                <NewDrink
+                    type="Drink"
+                    upsert={upsert}
                 />
             </div>
+
             <Table
                 columns={columns}
                 dataSource={
