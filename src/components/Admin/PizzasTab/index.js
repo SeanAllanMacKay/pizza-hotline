@@ -5,7 +5,7 @@ import notification from '../../../hooks/useNotification'
 import getPizzaSizes from '../../../actions/pizza-sizes/get-pizza-sizes'
 
 import { Table, Tag, List, Input, Form, Select, Modal } from 'antd';
-import { DeleteFilled, EditFilled, SaveFilled, CloseOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, SaveFilled, CloseOutlined, ExclamationCircleOutlined, PlusOutlined, FileImageOutlined } from '@ant-design/icons';
 
 import New from './New'
 import Button from '../../Button'
@@ -80,7 +80,7 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
     const isEditing = (record) => record.id === editingId;
 
     const edit = ({ tags: activeTags, ...rest }) => {
-        form.setFieldsValue({ tags: activeTags && activeTags.map(tag => tag.name), ...rest });
+        form.setFieldsValue({ tags: activeTags && activeTags.map(tag => tag.id), ...rest });
         setEditingId(rest.id);
     };
 
@@ -90,6 +90,7 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
 
     const save = async (id) => {
         const row = (await form.validateFields())
+        console.log(row)
         const newData = [...data];
         const index = newData.findIndex(item => id === item.id);
 
@@ -144,10 +145,6 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
             key: 'tags',
             width: 150,
             editable: true,
-            filters: tags.map(({ name }) => ({
-                text: name,
-                value: name
-            })),
             render: (tags) => (
                 <>
                     {tags && tags.map(tag => (
@@ -162,6 +159,31 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
             key: 'description',
             editable: true,
             width: 300
+        },
+        {
+            title: 'Image',
+            dataIndex: 'image',
+            key: 'image',
+            width: 100,
+            render: (selected) => (
+                <>
+                    {selected ?
+                        <a
+                            href={`https://storage.googleapis.com/pizza-hotline/${selected}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Button
+                                type="link"
+                                content={ <FileImageOutlined />}
+                                onClick={() => {}}
+                            />
+                        </a>
+                        :
+                        null
+                    }
+                </>
+            )
         },
         {
             title: 'Actions',
@@ -215,10 +237,6 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
             key: 'sizes',
             width: 150,
             editable: true,
-            filters: pizzaSizes.map(({ name }) => ({
-                text: name,
-                value: name
-            })),
             render: (sizes) => (
                 <>
                     {sizes && sizes.map(size => (
@@ -239,7 +257,7 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
                 onCell: (record) => ({
                   record,
                   dataIndex: col.dataIndex,
-                  inputType: col.dataIndex === 'tags' ? 'tags' : col.dataIndex === 'sizes' ? 'sizes' : 'text',
+                  inputType: col.dataIndex === 'tags' ? 'tags' : col.dataIndex === 'sizes' ? 'sizes' : col.dataIndex === 'image' ? 'image' : 'text',
                   title: col.title,
                   editing: isEditing(record),
                 }),
@@ -265,10 +283,10 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
                 style={{ margin: 0 }}
                 rules={dataIndex === 'name' ?
                     [
-                    {
-                        required: true,
-                        message: `Please Input ${title}!`,
-                    },
+                        {
+                            required: true,
+                            message: `Please Input ${title}!`,
+                        },
                     ]
                     :
                     []
@@ -278,7 +296,6 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
                     <Select
                         mode="multiple"
                         tokenSeparators={[',']}
-                        defaultValue={[]}
                     >
                         {tags && tags.map(({ id, name }) => (
                             <Option value={id}>{name}</Option>
@@ -286,17 +303,28 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
                     </Select>
                     :
                     inputType === 'sizes' ?
-                        <Select
-                            mode="multiple"
-                            tokenSeparators={[',']}
-                            defaultValue={[]}
-                        >
-                            {pizzaSizes && pizzaSizes.map(({ id, name }) => (
-                                <Option value={id}>{name}</Option>
-                            ))}
-                        </Select>
+                        <>
+                            <Select
+                                mode="multiple"
+                                tokenSeparators={[',']}
+                                defaultValue={record.sizes.map(size => size.id )}
+                                onChange={(values) => {
+                                    console.log(form.setFieldsValue)
+
+                                    record.sizes = values
+                                    console.log(record.sizes)
+                                }}
+                            >
+                                {pizzaSizes && pizzaSizes.map(({ id, name }) => (
+                                    <Option value={id}>{name}</Option>
+                                ))}
+                            </Select>
+                        </>
                         :
-                        <Input />
+                        inputType === 'image' ?
+                            <>Test</>
+                            :
+                            <Input />
                 }
               </Form.Item>
             ) : (
@@ -429,14 +457,15 @@ export default ({ getData, getTags, type, upsert, deleteItem, upsertTag, descrip
                     },
                 }}
                 dataSource={
-                    filters === null || filters.tags === null ?
+                    filters === null ?
                         data
                         :
-                        data.filter((row) => {
-                            return filters.tags.every(tag => {
-                                return row.tags.filter(rowTag => rowTag.name === tag).length > 0
+                        filters.tags !== null &&
+                            data.filter((row) => {
+                                return filters.tags.every(tag => {
+                                    return row.tags.filter(rowTag => rowTag.name === tag).length > 0
+                                })
                             })
-                        })
                     }
                 pagination={false}
                 onChange={async (pagination, newFilters) => { setFilters(newFilters) }}

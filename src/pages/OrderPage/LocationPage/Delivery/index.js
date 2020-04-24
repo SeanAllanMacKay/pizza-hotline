@@ -23,6 +23,7 @@ export default ({ values }) => {
             <FormField
                 name="city"
                 validate={required}
+                initialValue="winnipeg"
                 render={({ input: { value, onChange, onBlur }, meta: { touched, error } }) => (
                     <>
                         <Field
@@ -52,6 +53,7 @@ export default ({ values }) => {
             <FormField
                 name="address_type"
                 validate={required}
+                initialValue="apartment"
                 render={({ input: { value, onChange, onBlur }, meta: { touched, error } }) => (
                     <>
                         <Field
@@ -85,6 +87,7 @@ export default ({ values }) => {
                 <FormField
                     name="address"
                     validate={required}
+                    initialValue="232 Princess St"
                     render={({ input: { value, onChange, onBlur }, meta: { touched, error } }) => (
                         <>
                             <Field

@@ -3,10 +3,16 @@ import React, { useState } from 'react';
 import notification from '../../../hooks/useNotification'
 
 import { Form, Field as FormField } from 'react-final-form'
-import { Input, Select, Modal } from 'antd';
+import { Input, Select, Modal, Upload } from 'antd';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
 import Field from '../../Field'
 import Button from '../../Button'
+import FileUpload from '../../FileUpload'
+
+import { getToken } from '../../../hooks/useCookies'
+
+
 
 const { Option, OptGroup } = Select
 
@@ -15,8 +21,11 @@ const required = (value) => value ? undefined : 'Required'
 export default ({ type, upsert, tags, pizzaSizes }) => {
     const [open, setOpen] = useState(false)
 
-    const onSubmit = async (values) => {
-        const response = await upsert(values)
+    const onSubmit = async ({ image: { file }, ...rest }) => {
+        const response = await upsert({
+            ...rest,
+            image: file
+        })
 
         if(response.success){
             window.location.reload(false)
@@ -29,6 +38,7 @@ export default ({ type, upsert, tags, pizzaSizes }) => {
             })
         }
     }
+
     return (
         <>
             <Button
@@ -141,6 +151,24 @@ export default ({ type, upsert, tags, pizzaSizes }) => {
                                                 value={value}
                                                 onChange={onChange}
                                                 onBlur={onBlur}
+                                            />
+                                        </Field>
+                                    </>
+                                )}
+                            />
+
+                            <FormField
+                                name="image"
+                                validate={required}
+                                render={({ input: { value, onChange }, meta: { error, touched } }) => (
+                                    <>
+                                        <Field
+                                            title="Image"
+                                            error={touched && error}
+                                        >
+                                            <FileUpload
+                                                onChange={async (file) => onChange(file)}
+                                                value={value.base64}
                                             />
                                         </Field>
                                     </>

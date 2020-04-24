@@ -110,17 +110,7 @@ export default ({ stepForward, contactInfo, setContactInfo, account }) => {
     }
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                maxWidth: '1000px',
-                padding: '20px',
-                backgroundColor: 'white',
-                borderRadius: '10px'
-            }}
-        >
+        <>
             <div
                 style={{
                     display: 'flex',
@@ -421,6 +411,6 @@ export default ({ stepForward, contactInfo, setContactInfo, account }) => {
                     </div>
                 )}
             />
-        </div>
+        </>
     );
 }

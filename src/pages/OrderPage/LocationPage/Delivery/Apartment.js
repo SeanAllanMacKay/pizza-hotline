@@ -13,6 +13,7 @@ export default () => {
             <FormField
                 name="suite"
                 validate={required}
+                initialValue="2"
                 render={({ input: { value, onChange, onBlur }, meta: { touched, error } }) => (
                     <>
                         <Field
